@@ -162,15 +162,17 @@ def complemento(imagem):
 
     return imagem_copia
 
-
-def subtracao(imagem1, imagem2):
+""" Subtrai uma imagem com a outra. Para isso é necessário fazer uma interseção entre a imagem A com o complemento da B.
+    A ∩ Bᶜ
+"""
+def subtracao(imagem_A, imagem_B):
     
-    imagem_final = deepcopy(imagem1)
-    c_imagem2 = complemento(deepcopy(imagem2))
+    imagem_final = deepcopy(imagem_A)
+    c_imagem_B = complemento(deepcopy(imagem_B))
     
-    for i in range(len(imagem1)):
-        for j in range(len(imagem1[0])):
-            if imagem1[i][j] == 1 and c_imagem2[i][j] == 1:
+    for i in range(len(imagem_A)):
+        for j in range(len(imagem_A[0])):
+            if imagem_A[i][j] == 1 and c_imagem_B[i][j] == 1:
                 imagem_final[i][j] = 1
             else:
                 imagem_final[i][j] = 0
