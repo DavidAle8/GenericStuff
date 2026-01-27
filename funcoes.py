@@ -1,5 +1,6 @@
 import numpy as np
 import scipy as sci
+from copy import deepcopy
 
 mascara_v4 = [
     [0,1,0],
@@ -44,18 +45,22 @@ imagem_2 = [
     [0, 0, 0, 0, 0]
 ]
 
+
+
+""" Cria uma matriz limpa/descolorida (só com 0's/fundo) do tamanho da imagem. """
 def matriz_base(x, y):
     matriz = np.zeros((x, y), dtype=int)
     return matriz
 
-
+""" Busca a posição (x,y) da origem da máscara e retorna. """
 def origem_mascara(mascara):
     matriz = np.array(mascara)
     resultado = np.argwhere(matriz == 8)
-    linha, coluna = resultado[0]
-    return linha, coluna
+    x, y = resultado[0]
+    return x, y
 
 
+""" Busca as posições (x,y) dos pixels 1 da máscara e retorna um vetor com essas posições. """
 def posicoes_1_mascara(mascara):
     posicoes = []
     for i in range(len(mascara)):
@@ -66,6 +71,8 @@ def posicoes_1_mascara(mascara):
     return posicoes 
 
 
+""" Calcula o deslocamento de cada um dos pixels 1 da máscara baseado na origem. """
+""" Diz quanto que eu devo andar para chegar a esses pixels 1 da máscara. """
 def deslocamento(mascara):
     
     x, y = origem_mascara(mascara)
@@ -79,7 +86,9 @@ def deslocamento(mascara):
     return deslocamentos
 
 
-
+""" Retorna a imagem dilatada. Quando um pixel 1 da img é encontrado, uso os deslocamentos dos pixels 1
+da máscara para saber onde pintar alí naquele momento a imagem baseado na origem atual (pixel 1 da img).
+"""
 def dilatar(imagem, mascara):
     
     x = len(imagem)
@@ -98,7 +107,9 @@ def dilatar(imagem, mascara):
     return imagem_dilatada
 
 
-
+""" Retorna a imagem erodida. Pega cada ponto da imagem na qual estaria tbm os pixels 1 da máscara
+para saber se nesses pontos os pixels dela (da imagem) é 1, para saber se a máscara coube alí.
+"""
 def erodir(imagem, mascara):
     
     x = len(imagem)
@@ -122,9 +133,52 @@ def erodir(imagem, mascara):
                 
     return imagem_erodida
 
-       
-#print(dilatar(imagem_1, mascara_1))
-print(erodir(imagem_2, mascara_2))
+
+""" Erodi depois dilata """
+def abertura(imagem, mascara):
+    imagem_erodida = erodir(imagem, mascara)
+    imagem_final = dilatar(imagem_erodida, mascara)
+    return imagem_final
+
+
+""" dilata depois erodi """
+def fechamento(imagem, mascara):
+    imagem_dilatada = dilatar(imagem, mascara)
+    imagem_final = erodir(imagem_dilatada, mascara)
+    return imagem_final
+
+
+""" Retorna o complemento da imagem (inverte os pixels da imagem de entrada)"""
+def complemento(imagem):
+    
+    imagem_copia = deepcopy(imagem)
+    
+    for i in range(len(imagem_copia)):
+        for j in range(len(imagem_copia[0])):
+            if imagem_copia[i][j] == 1:
+                imagem_copia[i][j] = 0
+            else:
+                imagem_copia[i][j] = 1
+
+    return imagem_copia
+
+
+def subtracao(imagem1, imagem2):
+    
+    imagem_final = deepcopy(imagem1)
+    c_imagem2 = complemento(deepcopy(imagem2))
+    
+    for i in range(len(imagem1)):
+        for j in range(len(imagem1[0])):
+            if imagem1[i][j] == 1 and c_imagem2[i][j] == 1:
+                imagem_final[i][j] = 1
+            else:
+                imagem_final[i][j] = 0
+    return imagem_final
+
+
+print(f"{dilatar(imagem_1, mascara_1)} \n")
+print(f"{erodir(imagem_2, mascara_2)} \n")
 
 """ 
 
