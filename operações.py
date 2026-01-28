@@ -14,6 +14,8 @@ mascara_v8 = [
     [1,1,1]
 ]
 
+
+
 mascara_1 = [
     [0,1,0],
     [0,8,1],  
@@ -179,9 +181,15 @@ def subtracao(imagem_A, imagem_B):
     return imagem_final
 
 
-print(f"{dilatar(imagem_1, mascara_1)} \n")
-print(f"{erodir(imagem_2, mascara_2)} \n")
+#print(f"{dilatar(imagem_1, mascara_1)} \n")
+imagem_2_erodida = erodir(imagem_2, mascara_2)
+#print(f"{erodir(imagem_2, mascara_2)} \n")
 
+
+print(f"{np.array(imagem_2)}\n")
+print(f"{imagem_2_erodida} \n")
+
+print(np.array(subtracao(imagem_2, imagem_2_erodida)))
 """ 
 
 Simulando a pintura no pixel (1,2) da imagem:
