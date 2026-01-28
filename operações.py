@@ -1,6 +1,8 @@
 import numpy as np
 import scipy as sci
 from copy import deepcopy
+import numpy as np
+import matplotlib.pyplot as plt
 
 mascara_v4 = [
     [0,1,0],
