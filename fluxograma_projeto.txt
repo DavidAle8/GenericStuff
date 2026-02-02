@@ -1,0 +1,7 @@
+****************** FLUXOGRAMA DO FUNCIONAMENTO DO PROJETO ******************
+
+1 - Ideia geral
+
+    A principal ideia por trás de todo o código é identificar os objetos da imagem, "recortar" eles e guardar todos em um vetor.
+    Após isso, podemos analisar apenas os objetos tranquilamente, um por um, para averiguar se tem buracos ou nao.
+
