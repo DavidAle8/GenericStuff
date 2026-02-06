@@ -2,7 +2,6 @@ import numpy as np
 from copy import deepcopy
 from projeto.morfologia import *   
 from collections import deque
-from projeto.morfologia import *
 
 
 """ Retorna as posições dos pixels da vizinhança 8 do pixel atual """
@@ -33,8 +32,7 @@ def vizinhanca_4(x,y):
 
 
 """ Algoritmo de busca em profundidade para detectar objetos com a vizinhança 8. 
-    O mesmo retorna as posições onde se encontraram os pixels 1's do objeto
-    no qual os marcamos.
+    O mesmo retorna as posições onde se encontraram os pixels 1's do objeto, marcando-os.
 """
 def dfs_8(imagem, x, y):
 
@@ -57,7 +55,10 @@ def dfs_8(imagem, x, y):
 """
     Cria uma matriz para aquele objeto encontrado na imagem e retorna-o.
     Após receber como parâmetro as posições dos pixels 1 da imagem que foram marcadas,
-    descubro os i's e j's maximos das posições e subtraio para obter os tamanhos...
+    descubro os i's e j's maximos e mínimos das posições e subtraio para obter os tamanhos e além disso
+    subtraio cada posição dos pixels marcados por um referencial também dos pixels marcados (foi usado o minimo i e j 
+    de tdoas as posições dos pixels marcados como ref.) para saber onde eles se encontrariam/seriam 
+    pintados na matriz limpa matriz_resultante.
 """
 def criar_matriz_objeto(pos_objeto):
 
@@ -69,20 +70,28 @@ def criar_matriz_objeto(pos_objeto):
     m = max_i - min_i + 1
     n = max_j - min_j + 1
 
+    # A posição de referência é a posição do pixel marcado com menor i e j (ele equivale ao (0,0) da matriz limpa)
+    ref_i = min_i
+    ref_j = min_j
+    
     matriz_resultante = matriz_base(m, n)
 
     for i, j in pos_objeto:
-        novo_i = i - min_i
-        novo_j = j - min_j
-        matriz_resultante[novo_i][novo_j] = 1
+        cord_i = i - ref_i
+        cord_j = j - ref_j
+        matriz_resultante[cord_i][cord_j] = 1
 
     return matriz_resultante
 
 
-""" Cria e retorna um vetor contendo todos os objetos da imagem após serem detectadas pelo dfs_8 e ter sua matriz criada. """
+
+""" Cria e retorna um vetor contendo todos os objetos da imagem após serem detectadas pelo dfs_8 e 
+    terem sua matriz criada no criar_matriz_objeto.
+"""
 def colecao_de_objetos(imagem):
 
     colecao_objetos = []
+    
     for i in range(len(imagem)):
         for j in range(len(imagem[0])):
             if imagem[i][j] == 1:
@@ -94,8 +103,10 @@ def colecao_de_objetos(imagem):
 
 
 
-""" Pseudo dfs para encontrar os buracos com vizinhança 4 e retorna se o objeto possui mesmo buraco ou não
-    verificando se os 0's tocam na bora (pois não seriam buracos).
+""" No pseudo_dfs_4 buscamos buracos (pixels 0) verificando se ele está nas bordas do objeto.
+    Caso esteja, caso algum pixel 0 de um candidato a ser buraco toque a borda, então a condição de 
+    ser buraco falha colocamos que ele toca a borda (toca_borda = True), se não, retornamos que ele
+    não toca, e por isso se torna buraco (not toca_borda)
 """
 def pseudo_dfs_4(objeto, x, y):
 
@@ -107,6 +118,7 @@ def pseudo_dfs_4(objeto, x, y):
         cx, cy = fronteira.pop()
         if cx == 0 or cy == 0 or cx == len(objeto)-1 or cy == len(objeto[0])-1:
             toca_borda = True
+            break
         for nx, ny in vizinhanca_4(cx, cy):
             if (0 <= nx < len(objeto) and 0 <= ny < len(objeto[0])) and objeto[nx][ny] == 0 and (nx, ny) not in visitados:
                 fronteira.append((nx, ny))
